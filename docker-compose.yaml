@@ -1,0 +1,28 @@
+services:
+  motoserver:
+    image: motoserver/moto:latest
+    ports:
+      - "3000:3000"
+    environment:
+      MOTO_PORT: 3000
+      MOTO_IAM_LOAD_MANAGED_POLICIES: ${MOTO_IAM_LOAD_MANAGED_POLICIES}  # https://docs.getmoto.org/en/latest/docs/configuration/index.html#configuring-motoserver
+    networks:
+      - app-network
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts/postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "Q01",
+    "type": "direct",
+    "question": "What data does the S3 bucket retail-sensitive-public hold?",
+    "ground_truth": "It holds exports/customer_pii.csv and exports/payment_tokens.json, which contain customer PII and payment-token export data."
+  },
+  {
+    "id": "Q02",
+    "type": "direct",
+    "question": "What is the size of the EC2 instance with IP 10.42.10.10?",
+    "ground_truth": "The instance with private IP 10.42.10.10 is type t3.micro."
+  },
+  {
+    "id": "Q03",
+    "type": "direct",
+    "question": "What permissions does the IAM user retail-security have?",
+    "ground_truth": "retail-security has the SecurityAudit managed policy attached and a ReadOnlyAccess permissions boundary."
+  },
+  {
+    "id": "Q04",
+    "type": "direct",
+    "question": "How many S3 buckets are in the AWS account?",
+    "ground_truth": "There are 4 S3 buckets."
+  },
+  {
+    "id": "Q05",
+    "type": "direct",
+    "question": "List the S3 bucket names.",
+    "ground_truth": "retail-web-assets, retail-orders-private, retail-sensitive-public, retail-security-audit"
+  },
+  {
+    "id": "Q06",
+    "type": "direct",
+    "question": "How many EC2 instances are currently present?",
+    "ground_truth": "There are 2 EC2 instances."
+  },
+  {
+    "id": "Q07",
+    "type": "direct",
+    "question": "What are the two instance private IP addresses?",
+    "ground_truth": "10.42.10.10 and 10.42.10.20"
+  },
+  {
+    "id": "Q08",
+    "type": "direct",
+    "question": "How many IAM users are in this environment?",
+    "ground_truth": "There are 3 IAM users: retail-admin, retail-dev, and retail-security."
+  },
+  {
+    "id": "Q09",
+    "type": "comparison",
+    "question": "What is the most predominant file extension across all S3 objects?",
+    "ground_truth": "The most predominant extension is .json (3 files)."
+  },
+  {
+    "id": "Q10",
+    "type": "comparison",
+    "question": "Which has more objects: retail-web-assets or retail-sensitive-public?",
+    "ground_truth": "They are equal; each has 2 objects."
+  },
+  {
+    "id": "Q11",
+    "type": "comparison",
+    "question": "Compare access posture: which bucket is more permissive, retail-orders-private or retail-sensitive-public?",
+    "ground_truth": "retail-sensitive-public is more permissive because it is public-read-write, while retail-orders-private is private."
+  },
+  {
+    "id": "Q12",
+    "type": "complex",
+    "question": "Buckets intended to store sensitive data should use restrictive ACLs. Is any bucket violating this rule?",
+    "ground_truth": "Yes. retail-sensitive-public violates this rule because it has a public-read-write ACL."
+  },
+  {
+    "id": "Q13",
+    "type": "complex",
+    "question": "Considering both ACL and bucket policy, does retail-sensitive-public represent a high-risk misconfiguration? Why?",
+    "ground_truth": "Yes. It is high risk because ACL is public-read-write and the bucket policy allows Principal '*' to GetObject and PutObject on bucket objects."
+  },
+  {
+    "id": "Q14",
+    "type": "complex",
+    "question": "How many S3 buckets are exposed to the public?",
+    "ground_truth": "There are 2 publicly exposed buckets: retail-web-assets (public-read) and retail-sensitive-public (public-read-write)."
+  }
+]

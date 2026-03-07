@@ -1,0 +1,1 @@
+'''Specialized module for AWS account management.'''
