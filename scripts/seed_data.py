@@ -267,10 +267,39 @@ if __name__ == "__main__":
             ).get("AttachedPolicies", [])
             attached_arns = {policy["PolicyArn"] for policy in attached_policies}
             if user_config["policy_arn"] not in attached_arns:
-                iam.attach_user_policy(
-                    UserName=user_config["user_name"],
-                    PolicyArn=user_config["policy_arn"],
-                )
+                try:
+                    iam.attach_user_policy(
+                        UserName=user_config["user_name"],
+                        PolicyArn=user_config["policy_arn"],
+                    )
+                except ClientError as e:
+                    if e.response["Error"]["Code"] == "NoSuchEntity" and "aws:policy" in user_config["policy_arn"]:
+                        # Moto does not pre-populate AWS managed policies. Create local equivalent.
+                        policy_name = user_config["policy_arn"].split("/")[-1]
+                        import json
+                        try:
+                            created = iam.create_policy(
+                                PolicyName=policy_name,
+                                Path="/",
+                                PolicyDocument=json.dumps({
+                                    "Version": "2012-10-17",
+                                    "Statement": [{"Effect": "Allow", "Action": "*", "Resource": "*"}]
+                                })
+                            )
+                            local_arn = created["Policy"]["Arn"]
+                        except ClientError as ce:
+                            if ce.response["Error"]["Code"] == "EntityAlreadyExists":
+                                sts = get_aws_client(service="sts")
+                                account_id = sts.get_caller_identity()["Account"]
+                                local_arn = f"arn:aws:iam::{account_id}:policy/{policy_name}"
+                            else:
+                                raise ce
+                        iam.attach_user_policy(
+                            UserName=user_config["user_name"],
+                            PolicyArn=local_arn,
+                        )
+                    else:
+                        raise e
 
         # ************* NETWORK + EC2 SEEDING *************
         # Build baseline network resources (key pair, VPC, subnet, security groups)
